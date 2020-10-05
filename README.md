@@ -1,6 +1,6 @@
-##My CLI
+## My CLI
 
-###CLI tool accept 4 options (short alias and full name):
+### CLI tool accept 4 options (short alias and full name):
 
 1.  **-s, --shift**: a shift
 2.  **-i, --input**: an input file
