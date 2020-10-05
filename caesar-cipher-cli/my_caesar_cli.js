@@ -36,14 +36,16 @@ const actions = {
   },
   input(obj) {
     if (obj.isValid) {
-      read = fs.createReadStream(path.join(__dirname, obj.value));
+      read = fs.createReadStream(path.resolve(__dirname, obj.value));
       return;
     }
     read = process.stdin;
   },
   output(obj) {
     if (obj.isValid) {
-      write = fs.createWriteStream(path.join(__dirname, obj.value));
+      write = fs.createWriteStream(path.resolve(__dirname, obj.value), {
+        flags: 'a'
+      });
       return;
     }
     write = process.stdout;
