@@ -4,8 +4,13 @@ const usersService = require('./user.service');
 
 router.route('/').get(async (req, res) => {
   const users = await usersService.getAll();
-  // map user fields to exclude secret fields like "password"
   res.json(users.map(User.toResponse));
+});
+
+router.route('/:id').get(async (req, res) => {
+  const { id } = req.params;
+  const user = await usersService.getById(id);
+  res.json(user.toResponse);
 });
 
 module.exports = router;
