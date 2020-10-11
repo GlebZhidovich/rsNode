@@ -10,7 +10,8 @@ router.route('/').get(async (req, res) => {
 router.route('/:id').get(async (req, res) => {
   const { id } = req.params;
   const task = await tasksService.getById(id);
-  res.status(200).json(Task.toResponse(task));
+  if (task) res.status(200).json(Task.toResponse(task));
+  else res.sendStatus(404);
 });
 
 router.route('/').post(async (req, res) => {
