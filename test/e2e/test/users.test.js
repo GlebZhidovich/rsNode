@@ -36,7 +36,6 @@ describe('Users suite', () => {
         .expect(200)
         .expect('Content-Type', /json/);
       debug(usersResponse.body);
-
       expect(usersResponse.status).to.equal(200);
       expect(Array.isArray(usersResponse.body)).to.be.true();
     });
