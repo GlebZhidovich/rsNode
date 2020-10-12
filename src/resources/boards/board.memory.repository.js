@@ -1,3 +1,5 @@
+const tasksRepo = require('../tasks/task.memory.repository');
+
 let boardStorage = [];
 
 const getAll = () => {
@@ -14,19 +16,30 @@ const create = async board => {
 
 const update = async board => {
   const index = boardStorage.findIndex(val => val.id === board.id);
-  boardStorage = [
-    ...boardStorage.slice(0, index),
-    board,
-    ...boardStorage.slice(index + 1)
-  ];
+  if (typeof index === 'number') {
+    if (index === 0) boardStorage = [board, ...boardStorage.slice(index + 1)];
+    else {
+      boardStorage = [
+        ...boardStorage.slice(0, index),
+        board,
+        ...boardStorage.slice(index + 1)
+      ];
+    }
+  }
 };
 
 const remove = async id => {
   const index = boardStorage.findIndex(val => val.id === id);
-  boardStorage = [
-    ...boardStorage.slice(0, index),
-    ...boardStorage.slice(index + 1)
-  ];
+  if (typeof index === 'number') {
+    if (index === 0) boardStorage = [...boardStorage.slice(index + 1)];
+    else {
+      boardStorage = [
+        ...boardStorage.slice(0, index),
+        ...boardStorage.slice(index + 1)
+      ];
+    }
+    await tasksRepo.removeWithBoard(id);
+  }
 };
 
 module.exports = { getAll, getById, create, update, remove };

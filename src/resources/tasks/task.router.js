@@ -1,4 +1,4 @@
-const router = require('express').Router();
+const router = require('express').Router({ mergeParams: true });
 const Task = require('./task.model');
 const tasksService = require('./task.service');
 
@@ -15,12 +15,13 @@ router.route('/:id').get(async (req, res) => {
 });
 
 router.route('/').post(async (req, res) => {
-  const { title, order, description, taskId, boardId, columnId } = req.body;
+  const { title, order, description, userId, columnId } = req.body;
+  const { boardId } = req.params;
   const task = new Task({
     title,
     order,
     description,
-    taskId,
+    userId,
     boardId,
     columnId
   });
@@ -29,13 +30,14 @@ router.route('/').post(async (req, res) => {
 });
 
 router.route('/:id').put(async (req, res) => {
-  const { id, title, order, description, taskId, boardId, columnId } = req.body;
+  const { id, title, order, description, userId, columnId } = req.body;
+  const { boardId } = req.params;
   const task = new Task({
     id,
     title,
     order,
     description,
-    taskId,
+    userId,
     boardId,
     columnId
   });
