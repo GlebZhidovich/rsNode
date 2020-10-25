@@ -17,15 +17,15 @@ router.route('/:id').get(async (req, res) => {
 router.route('/').post(async (req, res) => {
   const { name, login, password } = req.body;
   const user = new User({ name, login, password });
-  await usersService.create(user);
-  res.status(200).json(User.toResponse(user));
+  const result = await usersService.create(user);
+  res.status(200).json(User.toResponse(result));
 });
 
 router.route('/:id').put(async (req, res) => {
-  const { id, name, login, password } = req.body;
-  const user = new User({ id, name, login, password });
-  await usersService.update(user);
-  res.status(200).json(User.toResponse(user));
+  const { id } = req.params;
+  const user = req.body;
+  const result = await usersService.update(id, user);
+  res.status(200).json(User.toResponse(result));
 });
 
 router.route('/:id').delete(async (req, res) => {

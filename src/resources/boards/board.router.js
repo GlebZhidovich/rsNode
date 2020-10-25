@@ -25,12 +25,13 @@ router.route('/').post(async (req, res) => {
 });
 
 router.route('/:id').put(async (req, res) => {
-  const { id, title } = req.body;
+  const { id } = req.params;
+  const { title } = req.body;
   let { columns } = req.body;
   columns = columns.map(col => new Column(col));
-  const board = new Board({ id, title, columns });
-  await boardsService.update(board);
-  res.status(200).json(Board.toResponse(board));
+  const board = { id, title, columns };
+  const result = await boardsService.update(id, board);
+  res.status(200).json(Board.toResponse(result));
 });
 
 router.route('/:id').delete(async (req, res) => {

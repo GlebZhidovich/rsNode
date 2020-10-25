@@ -1,55 +1,31 @@
-let tasksStorage = [];
+const Task = require('./task.model');
 
 const getAll = async () => {
-  return [...tasksStorage];
+  return await Task.find({});
 };
 
 const getById = async id => {
-  return tasksStorage.find(task => task.id === id);
+  return await Task.findById(id);
 };
 
 const create = async task => {
-  tasksStorage.push(task);
+  return await task.save();
 };
 
-const update = async task => {
-  const index = tasksStorage.findIndex(val => val.id === task.id);
-  if (typeof index === 'number') {
-    if (index === 0) tasksStorage = [task, ...tasksStorage.slice(index + 1)];
-    else {
-      tasksStorage = [
-        ...tasksStorage.slice(0, index),
-        task,
-        ...tasksStorage.slice(index + 1)
-      ];
-    }
-  }
+const update = async (id, task) => {
+  return await Task.findByIdAndUpdate(id, task);
 };
 
 const remove = async id => {
-  const index = tasksStorage.findIndex(val => val.id === id);
-  if (typeof index === 'number') {
-    if (index === 0) tasksStorage = [...tasksStorage.slice(index + 1)];
-    else {
-      tasksStorage = [
-        ...tasksStorage.slice(0, index),
-        ...tasksStorage.slice(index + 1)
-      ];
-    }
-  }
+  return await Task.findByIdAndDelete(id);
 };
 
 const removeWithBoard = async boardId => {
-  tasksStorage = tasksStorage.filter(val => val.boardId !== boardId);
+  return await Task.deleteMany({ boardId });
 };
 
 const updateWithUser = async userId => {
-  tasksStorage = tasksStorage.map(val => {
-    if (val.userId === userId) {
-      val.userId = null;
-    }
-    return val;
-  });
+  return await Task.updateMany({ userId }, { userId: null });
 };
 
 module.exports = {
@@ -59,6 +35,5 @@ module.exports = {
   update,
   remove,
   removeWithBoard,
-  updateWithUser,
-  tasksStorage
+  updateWithUser
 };

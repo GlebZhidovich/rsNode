@@ -1,47 +1,25 @@
-const tasksRepo = require('../tasks/task.memory.repository');
-
-let usersStorage = [];
+const User = require('./user.model');
+const { updateWithUser } = require('../tasks/task.service');
 
 const getAll = async () => {
-  return [...usersStorage];
+  return await User.find({});
 };
 
 const getById = async id => {
-  return usersStorage.find(user => user.id === id);
+  return await User.findById(id);
 };
 
 const create = async user => {
-  usersStorage.push(user);
+  return await user.save();
 };
 
-const update = async user => {
-  const index = usersStorage.findIndex(val => val.id === user.id);
-  if (typeof index === 'number') {
-    if (index === 0) {
-      usersStorage = [user, ...usersStorage.slice(index + 1)];
-    } else {
-      usersStorage = [
-        ...usersStorage.slice(0, index),
-        user,
-        ...usersStorage.slice(index + 1)
-      ];
-    }
-  }
+const update = async (id, user) => {
+  return await User.findByIdAndUpdate(id, user);
 };
 
 const remove = async id => {
-  const index = usersStorage.findIndex(val => val.id === id);
-
-  if (typeof index === 'number') {
-    if (index === 0) usersStorage = [...usersStorage.slice(index + 1)];
-    else {
-      usersStorage = [
-        ...usersStorage.slice(0, index),
-        ...usersStorage.slice(index + 1)
-      ];
-    }
-    await tasksRepo.updateWithUser(id);
-  }
+  await updateWithUser(id);
+  return await User.findByIdAndDelete(id);
 };
 
 module.exports = { getAll, getById, create, update, remove };

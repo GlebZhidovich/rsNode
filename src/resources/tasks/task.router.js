@@ -30,19 +30,11 @@ router.route('/').post(async (req, res) => {
 });
 
 router.route('/:id').put(async (req, res) => {
-  const { id, title, order, description, userId, columnId } = req.body;
-  const { boardId } = req.params;
-  const task = new Task({
-    id,
-    title,
-    order,
-    description,
-    userId,
-    boardId,
-    columnId
-  });
-  await tasksService.update(task);
-  res.status(200).json(Task.toResponse(task));
+  const task = req.body;
+  const { boardId, id } = req.params;
+  task.boardId = boardId;
+  const result = await tasksService.update(id, task);
+  res.status(200).json(Task.toResponse(result));
 });
 
 router.route('/:id').delete(async (req, res) => {

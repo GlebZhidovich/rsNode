@@ -5,7 +5,10 @@ const YAML = require('yamljs');
 const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
-const logger = require('./logger');
+const logger = require('./common/logger');
+const runDb = require('./common/db');
+
+runDb();
 
 const BAD_REQUEST = 400;
 
@@ -20,9 +23,17 @@ class ValidationError extends Error {
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
+process.on('uncaughtException', err => {
+  logger.error(err.message);
+});
+
+process.on('unhandledRejection', err => {
+  logger.error(err.message);
+});
+
 app.use(express.json());
 
-app.use('*', (req, res, next) => {
+app.use((req, res, next) => {
   logger.info(`Url: ${req.url}`);
   logger.info(`Params: ${JSON.stringify(req.query, null, 2)}`);
   logger.info(`Body: ${JSON.stringify(req.body, null, 2)}`);
@@ -53,13 +64,5 @@ app.use((err, req, res, next) => {
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
-
-process.on('uncaughtException', err => {
-  logger.error(err.message);
-});
-
-process.on('unhandledRejection', err => {
-  logger.error(err.message);
-});
 
 module.exports = app;
