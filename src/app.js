@@ -7,18 +7,13 @@ const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
 const logger = require('./common/logger');
 const runDb = require('./common/db');
+const {
+  httpErrors,
+  ValidationError,
+  errorsHandler
+} = require('./errors/http-errors');
 
 runDb();
-
-const BAD_REQUEST = 400;
-
-class ValidationError extends Error {
-  constructor() {
-    super();
-    this.status = BAD_REQUEST;
-    this.text = 'Bad Request Error';
-  }
-}
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -43,20 +38,8 @@ app.use((req, res, next) => {
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('/', (req, res, next) => {
-  const reqName = req.url.split('/')[1];
   if (req.originalUrl === '/') {
     res.send('Service is running!');
-  }
-  if (reqName !== 'users' && reqName !== 'boards') {
-    throw new ValidationError();
-  }
-  next();
-});
-
-app.use((err, req, res, next) => {
-  if (err instanceof ValidationError) {
-    logger.error(err.text);
-    res.status(err.status).send(err.text);
   }
   next();
 });
@@ -64,5 +47,8 @@ app.use((err, req, res, next) => {
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
+
+app.use((req, res, next) => next(ValidationError(httpErrors.NOT_FOUND)));
+app.use(errorsHandler);
 
 module.exports = app;
