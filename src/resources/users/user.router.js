@@ -2,6 +2,7 @@ const router = require('express').Router();
 const User = require('./user.model');
 const usersService = require('./user.service');
 const { handlerErrorAsync } = require('../../errors/http-errors');
+const { encrypt } = require('../../crypt/crypt');
 
 router.route('/').get(
   handlerErrorAsync(async (req, res) => {
@@ -22,7 +23,8 @@ router.route('/:id').get(
 router.route('/').post(
   handlerErrorAsync(async (req, res) => {
     const { name, login, password } = req.body;
-    const user = new User({ name, login, password });
+    const passwordHash = await encrypt(password);
+    const user = new User({ name, login, password: passwordHash });
     const result = await usersService.create(user);
     res.status(200).json(User.toResponse(result));
   })
