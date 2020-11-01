@@ -1,3 +1,5 @@
+const logger = require('../common/logger');
+
 const httpErrors = {
   BAD_REQUEST: [400, 'Bad Request'],
   UNAUTHORIZED: [401, 'Unauthorized'],
@@ -12,10 +14,24 @@ class ValidationError extends Error {
   }
 }
 
-function errorsHandler(err, req, res) {
-  if (err) {
-    console.log(err, req, res);
+function errorsHandler(err, req, res, next) {
+  if (err.code) {
+    res.status(err.code).send(err.message());
+  } else {
+    const [code, message] = httpErrors.INTERNAL_SERVER_ERROR;
+    logger.error(message);
+    res.status(code).send(message);
   }
+  next();
 }
 
-module.exports = { httpErrors, ValidationError, errorsHandler };
+function handlerErrorAsync(cb) {
+  return (req, res, next) => cb(req, res, next).catch(next);
+}
+
+module.exports = {
+  httpErrors,
+  ValidationError,
+  errorsHandler,
+  handlerErrorAsync
+};
