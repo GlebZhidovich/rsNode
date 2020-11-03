@@ -1,5 +1,6 @@
 const { MONGO_CONNECTION_STRING } = require('./config');
 const mongoose = require('mongoose');
+const logger = require('./logger');
 
 mongoose.connect(MONGO_CONNECTION_STRING, {
   useNewUrlParser: true,
@@ -9,10 +10,12 @@ mongoose.connect(MONGO_CONNECTION_STRING, {
 function runDb() {
   const db = mongoose.connection;
 
-  db.on('error', console.error.bind(console, 'connection error:'));
+  db.on('error', err => {
+    logger.error(`Db connection error: ${err}`);
+  });
   db.once('open', async () => {
     // we're connected!
-    console.log('connect');
+    console.log('Db connect');
     // db.dropDatabase();
   });
 }

@@ -9,6 +9,10 @@ const getById = async id => {
   return await User.findById(id);
 };
 
+const getByParams = async obj => {
+  return await User.findOne(obj);
+};
+
 const create = async user => {
   return await user.save();
 };
@@ -22,4 +26,4 @@ const remove = async id => {
   return await User.findByIdAndDelete(id);
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getAll, getById, getByParams, create, update, remove };
