@@ -8,10 +8,12 @@ const taskRouter = require('./resources/tasks/task.router');
 const loginRouter = require('./login/login.router');
 const logger = require('./common/logger');
 const runDb = require('./common/db');
+const authorize = require('./login/authorize');
 const {
   httpErrors,
   ValidationError,
-  errorsHandler
+  errorsHandler,
+  handlerErrorAsync
 } = require('./errors/http-errors');
 
 runDb();
@@ -36,6 +38,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(handlerErrorAsync(authorize));
+
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('/', (req, res, next) => {
@@ -44,6 +48,7 @@ app.use('/', (req, res, next) => {
   }
   next();
 });
+
 app.use('/login', loginRouter);
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
