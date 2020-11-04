@@ -17,12 +17,9 @@ router.route('/').post(
       return next(new ValidationError(httpErrors.FORBIDDEN));
     }
     if (await checkPassword(password, user.password)) {
-      const { _id: userId, login: userLogin } = user;
-      const token = await jwt.sign(
-        { userId, login: userLogin },
-        JWT_SECRET_KEY
-      );
-      return res.status(200).json(token);
+      const { _id: id, login: userLogin } = user;
+      const token = await jwt.sign({ id, login: userLogin }, JWT_SECRET_KEY);
+      return res.status(200).json({ token });
     }
     return next(new ValidationError(httpErrors.FORBIDDEN));
   })
