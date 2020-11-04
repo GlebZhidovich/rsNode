@@ -1,7 +1,7 @@
 const router = require('express').Router({ mergeParams: true });
 const Task = require('./task.model');
 const tasksService = require('./task.service');
-const { handlerErrorAsync } = require('../../errors/http-errors');
+const { handlerErrorAsync, httpErrors } = require('../../errors/http-errors');
 
 router.route('/').get(
   handlerErrorAsync(async (req, res) => {
@@ -15,7 +15,7 @@ router.route('/:id').get(
     const { id } = req.params;
     const task = await tasksService.getById(id);
     if (task) res.status(200).json(Task.toResponse(task));
-    else res.sendStatus(404);
+    else res.sendStatus(httpErrors.NOT_FOUND);
   })
 );
 

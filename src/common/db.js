@@ -10,15 +10,15 @@ mongoose.connect(MONGO_CONNECTION_STRING, {
   useUnifiedTopology: true
 });
 
-function runDb() {
+function runDb(server) {
   const db = mongoose.connection;
 
   db.on('error', err => {
     logger.error(`Db connection error: ${err}`);
   });
   db.once('open', async () => {
-    // we're connected!
     console.log('Db connect');
+    server();
     // db.dropDatabase();
     // const password = await encrypt('admin');
     // await create(new User({ name: 'admin', login: 'admin', password }));

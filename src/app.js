@@ -7,7 +7,6 @@ const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
 const loginRouter = require('./login/login.router');
 const logger = require('./common/logger');
-const runDb = require('./common/db');
 const authorize = require('./login/authorize');
 const {
   httpErrors,
@@ -15,11 +14,7 @@ const {
   errorsHandler,
   handlerErrorAsync
 } = require('./errors/http-errors');
-
-runDb();
-
-const app = express();
-const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
+const helmet = require('helmet');
 
 process.on('uncaughtException', err => {
   logger.error(err.message);
@@ -29,6 +24,10 @@ process.on('unhandledRejection', err => {
   logger.error(err.message);
 });
 
+const app = express();
+const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
+
+app.use(helmet());
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -37,8 +36,6 @@ app.use((req, res, next) => {
   logger.info(`Body: ${JSON.stringify(req.body, null, 2)}`);
   next();
 });
-
-app.use(handlerErrorAsync(authorize));
 
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
@@ -50,6 +47,8 @@ app.use('/', (req, res, next) => {
 });
 
 app.use('/login', loginRouter);
+
+app.use(handlerErrorAsync(authorize));
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);

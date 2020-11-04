@@ -1,8 +1,13 @@
 const router = require('express').Router();
 const User = require('./user.model');
 const usersService = require('./user.service');
-const { handlerErrorAsync } = require('../../errors/http-errors');
+const { handlerErrorAsync, httpErrors } = require('../../errors/http-errors');
 const { encrypt } = require('../../crypt/crypt');
+const validator = require('../../common/validation/validator');
+const {
+  id: idSchema,
+  user: userSchema
+} = require('../../common/validation/schema');
 
 router.route('/').get(
   handlerErrorAsync(async (req, res) => {
@@ -11,16 +16,18 @@ router.route('/').get(
   })
 );
 
-router.route('/:id').get(
+router.route('/:id').get([
+  validator(idSchema, 'params'),
   handlerErrorAsync(async (req, res) => {
     const { id } = req.params;
     const user = await usersService.getById(id);
     if (user) res.status(200).json(User.toResponse(user));
-    else res.sendStatus(404);
+    else res.sendStatus(httpErrors.NOT_FOUND);
   })
-);
+]);
 
 router.route('/').post(
+  validator(userSchema, 'body'),
   handlerErrorAsync(async (req, res) => {
     const { name, login, password } = req.body;
     const passwordHash = await encrypt(password);
@@ -31,6 +38,8 @@ router.route('/').post(
 );
 
 router.route('/:id').put(
+  validator(idSchema, 'params'),
+  validator(userSchema, 'body'),
   handlerErrorAsync(async (req, res) => {
     const { id } = req.params;
     const user = req.body;
@@ -40,6 +49,7 @@ router.route('/:id').put(
 );
 
 router.route('/:id').delete(
+  validator(idSchema, 'params'),
   handlerErrorAsync(async (req, res) => {
     const { id } = req.params;
     await usersService.remove(id);

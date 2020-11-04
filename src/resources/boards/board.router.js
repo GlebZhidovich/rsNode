@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Board = require('./board.model');
 const Column = require('./column.model');
 const boardsService = require('./board.service');
-const { handlerErrorAsync } = require('../../errors/http-errors');
+const { handlerErrorAsync, httpErrors } = require('../../errors/http-errors');
 
 router.route('/').get(
   handlerErrorAsync(async (req, res) => {
@@ -16,7 +16,7 @@ router.route('/:id').get(
     const { id } = req.params;
     const board = await boardsService.getById(id);
     if (board) res.status(200).json(Board.toResponse(board));
-    else res.sendStatus(404);
+    else res.sendStatus(httpErrors.NOT_FOUND);
   })
 );
 
