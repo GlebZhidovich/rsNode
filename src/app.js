@@ -38,8 +38,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(handlerErrorAsync(authorize));
-
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('/', (req, res, next) => {
@@ -50,6 +48,8 @@ app.use('/', (req, res, next) => {
 });
 
 app.use('/login', loginRouter);
+
+app.use(handlerErrorAsync(authorize));
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
