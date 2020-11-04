@@ -54,7 +54,7 @@ app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
 
-app.use((req, res, next) => next(ValidationError(httpErrors.NOT_FOUND)));
+app.use((req, res, next) => next(new ValidationError(httpErrors.NOT_FOUND)));
 app.use(errorsHandler);
 
 module.exports = app;

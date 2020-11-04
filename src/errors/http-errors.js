@@ -17,7 +17,7 @@ class ValidationError extends Error {
 
 function errorsHandler(err, req, res, next) {
   if (err.code) {
-    res.status(err.code).send(err.message());
+    res.status(err.code).send(err.message);
   } else {
     const [code, message] = httpErrors.INTERNAL_SERVER_ERROR;
     logger.error(message);

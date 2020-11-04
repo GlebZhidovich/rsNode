@@ -1,6 +1,8 @@
 const { MONGO_CONNECTION_STRING } = require('./config');
 const mongoose = require('mongoose');
 const logger = require('./logger');
+const User = require('../resources/users/user.model');
+const { create } = require('../resources/users/user.service');
 
 mongoose.connect(MONGO_CONNECTION_STRING, {
   useNewUrlParser: true,
@@ -16,7 +18,10 @@ function runDb() {
   db.once('open', async () => {
     // we're connected!
     console.log('Db connect');
-    // db.dropDatabase();
+    db.dropDatabase();
+    await create(
+      new User({ name: 'admin', login: 'admin', password: 'admin' })
+    );
   });
 }
 
