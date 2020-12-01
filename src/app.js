@@ -15,6 +15,7 @@ const {
   handlerErrorAsync
 } = require('./errors/http-errors');
 const helmet = require('helmet');
+const cors = require('cors');
 
 process.on('uncaughtException', err => {
   logger.error(err.message);
@@ -28,6 +29,7 @@ const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
 app.use(helmet());
+app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
